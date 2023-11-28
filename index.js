@@ -30,6 +30,8 @@ let randomGraph = new RandomGraph(document.getElementById("node-count"),
     document.getElementById("edge-count"), document.getElementById("random-graph-btn"),
     graphCanvas);
 window.onload = () => {
+    /* Set canvas size */
     resize();
+    /* Draw a random graph on startup */
     randomGraph.generate();
 }
