@@ -4,14 +4,19 @@
     <meta charset="utf-8">
     <title>Graph Drawing</title>
     <link rel="stylesheet" href="index.css">
-    <script defer type="module" src="index.js"></script>
-    <script defer type="module" src="./src/draw.js"></script>
-    <script defer type="module" src="./src/graph.js"></script>
-    <script defer type="module" src="./src/randomgraph.js"></script>
-    <script defer type="module" src="./src/utils.js"></script>
 </head>
 <body>
     <canvas></canvas>
+    <div id="floating-textbox">
+        <h1 id="floating-header">Tools</h1>
+        <p>Adjust the radius of the nodes</p>
+        <input type="range" id="radius-slider" min="15" max="60">
+        <p id="radius-value"></p>
+    </div>
+    <script defer type="module" src="index.js"></script>
+    <script defer type="module" src="./src/draw.js"></script>
+    <script defer type="module" src="./src/graph.js"></script>
+    <script defer type="module" src="./src/utils.js"></script>
 </body>
 </html>
 

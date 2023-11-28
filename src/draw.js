@@ -1,4 +1,4 @@
-import { generateRandomGraph } from './randomgraph.js';
+import { generateRandomGraph } from './utils.js';
 
 export class GraphCanvas {
     context;
@@ -165,6 +165,16 @@ export class GraphCanvas {
         return true;
     }
 
+    changeRadius(radius) {
+        radius = parseInt(radius);
+        this.radius = radius;
+        this.fontSize = Math.floor(radius * this.fontSizeRadiusRatio);
+        this.nodes.forEach(n => {
+            n.radius = radius;
+        });
+        this.updateCanvas();
+    }
+
     /* Redraw the canvas */
     updateCanvas() {
         /* Clear the canvas */
@@ -204,13 +214,13 @@ export class GraphCanvas {
         const graph = generateRandomGraph(numberOfNodes, densityProb, window.innerWidth, window.innerHeight);
         this.nodes = graph.nodes;
         this.edges = graph.edges;
+        this.counter = numberOfNodes;
         for (let i = 0; i < this.nodes.length; i++) {
             this.nodes[i].radius = this.radius;
             this.nodes[i].fillStyle = this.fillStyle;
             this.nodes[i].strokeStyle = this.strokeStyle;
             this.nodes[i].selectedStrokeStyle = this.selectedStrokeStyle;
         }
-        this.counter = numberOfNodes;
         this.updateCanvas();
     }
 }
