@@ -1,7 +1,6 @@
 #floating-textbox {
     position: absolute;
     z-index: 99;
-    text-align: center;
     border: 2px solid black;
     border-radius: 5px;
     padding: 10px;
@@ -14,4 +13,5 @@
     z-index: 100;
     font-size: 28px;
     font-weight: 400;
+    text-align: center;
 }

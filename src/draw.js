@@ -223,6 +223,17 @@ export class GraphCanvas {
         }
         this.updateCanvas();
     }
+
+    clearCanvas() {
+        this.nodes = [];
+        this.edges = [];
+        this.counter = 0;
+        this.selectedNode = undefined;
+        this.selectedNodes = [];
+        this.mouseDownTime = undefined;
+        this.mouseUpTime = undefined;
+        this.updateCanvas();
+    }
 }
 
 function getClosestEdge(nodeA, nodeB) {
