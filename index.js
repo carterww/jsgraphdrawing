@@ -29,7 +29,7 @@ let textBox = new FloatingTextbox(document.getElementById("floating-textbox"),
 let randomGraph = new RandomGraph(document.getElementById("node-count"),
     document.getElementById("edge-count"), document.getElementById("random-graph-btn"),
     graphCanvas);
-setTimeout(() => {
+window.onload = () => {
+    resize();
     randomGraph.generate();
-}, 1000);
-resize();
+}
