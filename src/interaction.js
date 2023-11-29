@@ -3,6 +3,7 @@ export class FloatingTextbox {
     headerElement;
     positions;
     radiusSlider;
+    isMinimized;
 
     constructor(element, headerElement, radiusSlider) {
         this.element = element;
@@ -10,6 +11,7 @@ export class FloatingTextbox {
         this.headerElement.onmousedown = this.mouseDown.bind(this);
         this.positions = [0, 0, 0, 0];
         this.radiusSlider = radiusSlider;
+        this.isMinimized = false;
     }
 
     mouseDown(e) {
@@ -76,8 +78,8 @@ export class RadiusSlider {
     }
 }
 
-const DEFAUlT_NODE_COUNT = 6;
-const DEFAULT_EDGE_PROB = 0.4;
+const DEFAULT_NODE_COUNT = 6;
+const DEFAULT_EDGE_PROB = 0.5;
 
 export class RandomGraph {
     numberOfNodes;
@@ -89,8 +91,14 @@ export class RandomGraph {
     generateButton;
 
     constructor(numberOfNodesInput, edgeProbInput, generateButton, graphCanvas) {
-        this.numberOfNodes = DEFAUlT_NODE_COUNT;
-        this.edgeProb = DEFAULT_EDGE_PROB;
+        /* I was testing and wanted to keep the same settings */
+        if (window.localStorage.getItem("randomeGenNumberOfNodes"))
+            this.numberOfNodes = parseInt(window.localStorage.getItem("randomeGenNumberOfNodes"));
+        else this.numberOfNodes = DEFAULT_NODE_COUNT;
+
+        if (window.localStorage.getItem("randomGenEdgeProb"))
+            this.edgeProb = parseFloat(window.localStorage.getItem("randomGenEdgeProb"));
+        else this.edgeProb = DEFAULT_EDGE_PROB;
 
         this.numberOfNodesInput = numberOfNodesInput;
         this.edgeProbInput = edgeProbInput;
@@ -110,6 +118,7 @@ export class RandomGraph {
         if (num < 0) num = 0;
         if (num > 1000) num = 1000;
         this.numberOfNodes = num;
+        this.writeInput(this.numberOfNodes, null);
     }
 
     updateEdgeProb(e) {
@@ -117,6 +126,12 @@ export class RandomGraph {
         if (prob < 0) prob = 0;
         if (prob > 1) prob = 1;
         this.edgeProb = prob;
+        this.writeInput(null, this.edgeProb);
+    }
+
+    writeInput(numberOfNodes, edgeProb) {
+        if (numberOfNodes) window.localStorage.setItem("randomeGenNumberOfNodes", numberOfNodes);
+        if (edgeProb) window.localStorage.setItem("randomGenEdgeProb", edgeProb);
     }
 
     generate(e) {
@@ -184,11 +199,14 @@ export class Menu {
         this.menuButtonsParent.style.display = newButtons;
         this.menuContentsParent.style.display = newContent;
         this.isMinimized = !this.isMinimized;
+        this.textBox.isMinimized = this.isMinimized;
         const minimizeButton = this.menuButtons.find(button => button.id == "minimize");
         if (!minimizeButton) return;
-        
         minimizeButton.innerText = this.isMinimized ? "+" : "-";
-        minimizeButton.style.right = this.isMinimized ? "2px" : "20px";
+        /* Cosmetic stuff to make the + look better */
+        minimizeButton.style.fontSize = this.isMinimized ? "30px" : "40px";
+        minimizeButton.style.right = this.isMinimized ? "4px" : "20px";
+        minimizeButton.style.top = this.isMinimized ? "4px" : "-5px";
         this.textBox.element.style.width = this.isMinimized ? "100px" : "350px";
     }
 }

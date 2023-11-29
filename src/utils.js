@@ -26,7 +26,7 @@ export function exportGraphToAdjMatrixCSV(nodes, edges, isDirected=false) {
     document.body.removeChild(element);
 }
 
-export function generateRandomGraph(numberOfNodes, densityProb, xRange, yRange) {
+export function generateRandomGraph(numberOfNodes, densityProb, xRange, yRange, isDirected=false) {
     if (numberOfNodes < 0) throw new Error("Number of nodes must be positive");
     if (densityProb < 0 || densityProb > 1) throw new Error("Density probability must be between 0 and 1");
 
@@ -41,11 +41,12 @@ export function generateRandomGraph(numberOfNodes, densityProb, xRange, yRange) 
             // not setting cosmetics here
         });
     }
+    let outerIterations = isDirected ? nodes.length : nodes.length / 2;
 
-    for (let i = 0; i < nodes.length; i++) {
+    for (let i = 0; i < outerIterations; i++) {
         for (let j = 0; j < nodes.length; j++) {
             if (i == j) continue;
-            if (Math.random() < densityProb) {
+            if (Math.random() <= densityProb) {
                 edges.push({
                     from: nodes[i],
                     to: nodes[j],
@@ -54,5 +55,33 @@ export function generateRandomGraph(numberOfNodes, densityProb, xRange, yRange) 
         }
     }
 
+    // Convert to undirected
+    if (!isDirected) {
+        let newEdges = [];
+        for (let i = 0; i < edges.length; i++) {
+            let edge = edges[i];
+            if (!edge.from || !edge.to) continue;
+            if (!doesEdgeExist(newEdges, edge)) {
+                newEdges.push(edge);
+                newEdges.push({
+                    from: edge.to,
+                    to: edge.from,
+                });
+            }
+        }
+        edges = newEdges;
+    }
+
     return { nodes, edges };
+}
+
+function doesEdgeExist(edges, edge) {
+    for (let i = 0; i < edges.length; i++) {
+        let e = edges[i];
+        if ((e.from.id == edge.from.id && e.to.id == edge.to.id) ||
+            (e.from.id == edge.to.id && e.to.id == edge.from.id)) {
+            return true;
+        }
+    }
+    return false;
 }

@@ -16,6 +16,10 @@ document.getElementById("clear-btn").onclick = () => {
     graphCanvas.clearCanvas();
 }
 
+document.getElementById("delete-mode-btn").onclick = () => {
+    graphCanvas.toggleDeleteMode();
+}
+
 document.getElementById("save-btn").onclick = () => {
     exportGraphToAdjMatrixCSV(graphCanvas.nodes, graphCanvas.edges);
 }

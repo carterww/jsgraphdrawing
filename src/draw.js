@@ -18,6 +18,9 @@ export class GraphCanvas {
     strokeStyle;
     selectedStrokeStyle;
 
+    isDeleteMode;
+    lastNodeLength;
+
     constructor(canvas, context) {
         if (!canvas || !context) {
             throw new Error('Canvas and context are required');
@@ -37,11 +40,42 @@ export class GraphCanvas {
         this.fontSizeRadiusRatio = 0.7; // For scaling the font size with the radius
         this.fillStyle = 'transparent';
         this.strokeStyle = 'black';
-        this.selectedStrokeStyle = 'red';
+        this.selectedStrokeStyle = '#f9d62e';
+
+        this.isDeleteMode = false;
+        this.lastNodeLength = 0;
+    }
+
+    toggleDeleteMode() {
+        this.isDeleteMode = !this.isDeleteMode;
+        if (!this.isDeleteMode) {
+            document.body.style.cursor = "default";
+            this.selectedNode = undefined;
+            this.selectedNodes = [];
+            this.mouseDownTime = undefined;
+            this.mouseUpTime = undefined;
+
+            /* If no nodes were deleted, don't reorder */
+            if (this.lastNodeLength == this.nodes.length) return;
+            /* Reorder the node vertices */
+            this.nodes = this.nodes.sort((a, b) => {
+                return parseInt(a.id) - parseInt(b.id);
+            });
+            for (let i = 0; i < this.nodes.length; i++) {
+                this.nodes[i].id = (i + 1).toString();
+            }
+            this.updateCanvas();
+        } else if (this.isDeleteMode) {
+            this.selectedNode = undefined;
+            this.selectedNodes = [];
+            this.lastNodeLength = this.nodes.length;
+            document.body.style.cursor = "not-allowed";
+        }
     }
 
     /* Moves a node on the canvas */
     moveNode(e) {
+        if (this.isDeleteMode) return;
         if (this.selectedNode) {
             this.selectedNode.x = e.x;
             this.selectedNode.y = e.y;
@@ -60,6 +94,18 @@ export class GraphCanvas {
         });
     }
 
+    findEdge(x, y) {
+        return this.edges.find(e => {
+            const list = getClosestEdge(e.from, e.to);
+            const a = list[0];
+            const b = list[1];
+            const dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
+            const distA = Math.sqrt(Math.pow(x - a.x, 2) + Math.pow(y - a.y, 2));
+            const distB = Math.sqrt(Math.pow(x - b.x, 2) + Math.pow(y - b.y, 2));
+            return distA + distB <= dist + 4;
+        });
+    }
+
     /* Mouse down can signify a few things:
         * 1. A node is being dragged.
         * 2. A node is being selected for an edge.
@@ -67,6 +113,18 @@ export class GraphCanvas {
         */
     mouseDown(e) {
         if (e.button != 0) return;
+        if (this.isDeleteMode) {
+            let target = this.findNode(e.x, e.y);
+            if (target) {
+                this.deleteNode(target);
+                return;
+            } else if (!target) {
+                target = this.findEdge(e.x, e.y);
+                if (target) {
+                    this.deleteEdge(target);
+                }
+            }
+        }
         this.mouseDownTime = e.timeStamp;
         /* If clicking on a node, move it */
         let target = this.findNode(e.x, e.y);
@@ -75,6 +133,20 @@ export class GraphCanvas {
             this.selectedNode = target;
             this.selectedNode.selected = true;
         }
+    }
+
+    deleteNode(target) {
+        this.nodes = this.nodes.filter(n => n.id != target.id);
+        this.edges = this.edges.filter(e => e.from.id != target.id && e.to.id != target.id);
+        this.updateCanvas();
+    }
+
+    deleteEdge(target) {
+        this.edges = this.edges.filter(e => {
+            return !((e.from.id == target.from.id && e.to.id == target.to.id) ||
+                (e.from.id == target.to.id && e.to.id == target.from.id));
+        });
+        this.updateCanvas();
     }
 
 
@@ -87,6 +159,7 @@ export class GraphCanvas {
         * 4. A node is being created.
         */
     mouseUp(e) {
+        if (this.isDeleteMode) return;
         if (e.button != 0) return;
         let target = this.findNode(e.x, e.y);
         this.mouseUpTime = e.timeStamp;
@@ -139,7 +212,12 @@ export class GraphCanvas {
             from: this.selectedNodes[0],
             to: this.selectedNodes[1],
         };
+        let edge2 = {
+            from: this.selectedNodes[1],
+            to: this.selectedNodes[0],
+        };
         this.edges.push(edge);
+        this.edges.push(edge2);
         this.clearSelectedNodes();
         this.updateCanvas();
     }
@@ -154,11 +232,11 @@ export class GraphCanvas {
 
     /* Checks if an edge can be created between two nodes */
     isValidEdge(from, to) {
-        if (from == to) return false;
+        if (from.id == to.id) return false;
         for (let i = 0; i < this.edges.length; i++) {
             let edge = this.edges[i];
-            if ((edge.from == from && edge.to == to) ||
-                (edge.from == to && edge.to == from)) {
+            if ((edge.from.id == from.id && edge.to.id == to.id) ||
+                (edge.from.id == to.id && edge.to.id == from.id)) {
                 return false;
             }
         }
@@ -199,7 +277,7 @@ export class GraphCanvas {
             this.context.fillStyle = node.fillStyle;
             this.context.arc(node.x, node.y, node.radius, 0, Math.PI * 2, true);
             this.context.strokeStyle = node.selected ? node.selectedStrokeStyle : node.strokeStyle;
-            this.context.lineWidth = node.selected ? 3 : 1;
+            this.context.lineWidth = node.selected ? 4 : 1;
             this.context.fill();
             this.context.stroke();
             this.context.font = font;
@@ -211,7 +289,7 @@ export class GraphCanvas {
     }
 
     drawRandomGraph(numberOfNodes, densityProb) {
-        const graph = generateRandomGraph(numberOfNodes, densityProb, window.innerWidth, window.innerHeight);
+        const graph = generateRandomGraph(numberOfNodes, densityProb, window.innerWidth, window.innerHeight, false);
         this.nodes = graph.nodes;
         this.edges = graph.edges;
         this.counter = numberOfNodes;

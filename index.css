@@ -41,6 +41,18 @@ body {
     background: lightgrey;
 }
 
+#delete-mode-btn {
+    background: red;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 18px;
+    color: white;
+    padding: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
 #floating-content div {
     display: none;
 }
