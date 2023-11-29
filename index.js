@@ -1,5 +1,5 @@
 import { GraphCanvas } from "./src/draw.js";
-import { FloatingTextbox, RadiusSlider, RandomGraph } from "./src/interaction.js";
+import { FloatingTextbox, RadiusSlider, RandomGraph, Menu } from "./src/interaction.js";
 import { exportGraphToAdjMatrixCSV } from "./src/utils.js";
 
 const canvas = document.querySelector('canvas');
@@ -16,6 +16,10 @@ document.getElementById("clear-btn").onclick = () => {
     graphCanvas.clearCanvas();
 }
 
+document.getElementById("save-btn").onclick = () => {
+    exportGraphToAdjMatrixCSV(graphCanvas.nodes, graphCanvas.edges);
+}
+
 function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -29,6 +33,16 @@ let textBox = new FloatingTextbox(document.getElementById("floating-textbox"),
 let randomGraph = new RandomGraph(document.getElementById("node-count"),
     document.getElementById("edge-count"), document.getElementById("random-graph-btn"),
     graphCanvas);
+
+let menuButtons = Array.from(document.getElementById("floating-menu").children);
+let menuContents = Array.from(document.getElementById("floating-content").children);
+menuButtons.push(document.getElementById("minimize"));
+let buttonsParent = document.getElementById("floating-menu");
+let contentsParent = document.getElementById("floating-content");
+
+let menu = new Menu(buttonsParent, menuButtons, contentsParent, menuContents, graphCanvas, textBox);
+
+
 window.onload = () => {
     /* Set canvas size */
     resize();

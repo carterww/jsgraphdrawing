@@ -1,17 +1,55 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
 #floating-textbox {
     position: absolute;
     z-index: 99;
     border: 2px solid black;
     border-radius: 5px;
     padding: 10px;
+    width: 350px;
+    height: min-content;
     left: 20px;
+    background: #89d7e8;
 }
 
 #floating-textbox h1 {
     cursor: move;
     margin: 0 0 10px 0;
     z-index: 100;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 400;
     text-align: center;
+}
+
+#floating-menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#floating-menu div {
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 16px;
+    color: black;
+    padding: 5px;
+    cursor: pointer;
+    background: lightgrey;
+}
+
+#floating-content div {
+    display: none;
+}
+
+#minimize {
+    position: absolute;
+    top: -5px;
+    right: 20px;
+    font-weight: normal;
+    font-size: 40px;
+    cursor: pointer;
 }

@@ -9,23 +9,47 @@
 <body>
     <canvas></canvas>
     <div id="floating-textbox">
+        <span id="minimize">-</span>
         <h1 id="floating-header">Tools</h1>
-        <h3>Adjust the radius of the nodes</h3>
-        <input type="range" id="radius-slider" min="15" max="60">
-        <p id="radius-value"></p>
-        <h3>Generate a random graph</h3>
+        <div id="floating-menu">
+            <div id="display">Display</div>
+            <div id="random">Random</div>
+            <div id="utility">Utility</div>
+            <div id="mode">Mode</div>
+        </div>
+        <div id="floating-content">
+            <div id="display-content">
+                <div style="display: flex; flex-direction: row; margin: 0 auto; width: min-content;">
+                    <label for="radius-slider">Radius</label>
+                    <input type="range" id="radius-slider" min="15" max="60">
+                    <span id="radius-value"></span>
+                </div>
+            </div>
+            <div id="random-content">
+                <h3>Generate a random graph</h3>
+                <div style="display: flex; justify-content: space-between;">
+                    <label for="node-count">Number of vertices</label>
+                    <input type="number" id="node-count" min="1" max="100" step="1">
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <label for="edge-count">Edge probability</label>
+                    <input type="number" id="edge-count" min="0" max="1">
+                </div>
+                <button id="random-graph-btn">Generate</button>
+            </div>
+            <div id="utility-content">
+                <button id="save-btn">Save Graph</button>
+                <!--<button id="load-btn">Load Graph</button>-->
+                <button id="clear-btn">Clear Graph</button>
+            </div>
+
+            <div id="mode-content">
+
+            </div>
+        </div>
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
             <div style="display: flex; flex-direction: column;">
-                <label for="node-count">Number of nodes</label>
-                <input type="number" id="node-count" min="1" max="100" step="1">
-            </div>
-            <div style="display: flex; flex-direction: column;">
-                <label for="edge-count">Edge probability</label>
-                <input type="number" id="edge-count" min="0" max="1">
-            </div>
-            <button id="random-graph-btn">Generate</button>
         </div>
-        <button id="clear-btn" type="button">Clear Graph</button>
     </div>
     <script defer type="module" src="index.js"></script>
     <script defer type="module" src="./src/draw.js"></script>
@@ -34,4 +58,3 @@
     <script defer type="module" src="./src/interaction.js"></script>
 </body>
 </html>
-

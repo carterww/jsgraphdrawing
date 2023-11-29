@@ -1,4 +1,3 @@
-
 export class FloatingTextbox {
     element;
     headerElement;
@@ -11,7 +10,6 @@ export class FloatingTextbox {
         this.headerElement.onmousedown = this.mouseDown.bind(this);
         this.positions = [0, 0, 0, 0];
         this.radiusSlider = radiusSlider;
-        this.setInitialPosition();
     }
 
     mouseDown(e) {
@@ -47,7 +45,7 @@ export class FloatingTextbox {
     }
 
     setInitialPosition() {
-        /* 20px from the bottom */
+        /* Set initial position 20px from bottom*/
         this.element.style.top = Math.floor(window.innerHeight - this.element.offsetHeight - 20) + "px";
     }
 
@@ -123,5 +121,74 @@ export class RandomGraph {
 
     generate(e) {
         this.graphCanvas.drawRandomGraph(this.numberOfNodes, this.edgeProb);
+    }
+}
+
+export class Menu {
+    menuButtons;
+    menuContents;
+
+    menuButtonsParent;
+    menuContentsParent;
+
+    graphCanvas;
+    textBox;
+
+    isMinimized;
+    menuButtonsParentDisplay;
+    menuContentsParentDisplay;
+
+    constructor(buttonsParent, menuButtons, contentsParent, menuContents, graphCanvas, textBox) {
+        this.graphCanvas = graphCanvas;
+        this.textBox = textBox;
+        this.menuButtons = menuButtons;
+        this.menuContents = menuContents;
+        this.menuButtonsParent = buttonsParent;
+        this.menuContentsParent = contentsParent;
+        this.menuContents[0].style.display = "block";
+        this.isMinimized = false;
+        this.menuButtonsParentDisplay = this.menuButtonsParent.style.display;
+        this.menuContentsParentDisplay = this.menuContentsParent.style.display;
+
+        this.textBox.setInitialPosition();
+
+        for (let i = 0; i < this.menuButtons.length; i++) {
+            this.menuButtons[i].onclick = this.changeDisplay.bind(this);
+        }
+    }
+
+    changeDisplay(e) {
+        const buttonId = e.target.id;
+        if (buttonId == "minimize") {
+            this.minimizeTextbox();
+            return;
+        }
+        let contentIndex = -1;
+        for (let i = 0; i < this.menuContents.length; i++) {
+            if (this.menuContents[i].id.includes(buttonId)) {
+                this.menuContents[i].style.display = "block";
+                contentIndex = i;
+                break;
+            }
+        }
+        if (contentIndex == -1) return;
+        for (let i = 0; i < this.menuContents.length; i++) {
+            if (i == contentIndex) continue;
+            this.menuContents[i].style.display = "none";
+        }
+    }
+
+    minimizeTextbox() {
+        const newContent = this.isMinimized ? this.menuContentsParentDisplay : "none";
+        const newButtons = this.isMinimized ? this.menuButtonsParentDisplay : "none";
+        this.menuButtonsParent.style.display = newButtons;
+        this.menuContentsParent.style.display = newContent;
+        this.isMinimized = !this.isMinimized;
+        const minimizeButton = this.menuButtons.find(button => button.id == "minimize");
+        if (!minimizeButton) return;
+        
+        minimizeButton.innerText = this.isMinimized ? "+" : "-";
+        minimizeButton.style.right = this.isMinimized ? "2px" : "20px";
+        this.textBox.element.style.width = this.isMinimized ? "100px" : "350px";
     }
 }
